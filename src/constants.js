@@ -1,0 +1,1 @@
+export const routerPrefix = 'api/v1'

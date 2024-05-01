@@ -15,4 +15,11 @@ app.use(urlencoded({
 }))
 app.use(express.static('Public'))
 
+// Import routes
+import userRouter from "./routes/user.route.js"
+import { routerPrefix } from './constants.js'
+
+// Routes declaration
+app.use(`/${routerPrefix}/users`,userRouter)
+
 export {app}
