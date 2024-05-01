@@ -1,0 +1,4 @@
+PORT = 8000
+CORS_ORIGIN = *
+
+DATABASE_URL="mysql://johndoe:randompassword@localhost:5432/yourdbname?schema=public"
