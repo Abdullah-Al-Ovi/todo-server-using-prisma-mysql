@@ -72,4 +72,27 @@ const getTodosbyUserId = asyncHandler(async (req, res) => {
     }
 })
 
-export { createTodo, getTodosbyUserId}
+const getIndividualTodoByTodoId =asyncHandler(async(req,res)=>{
+    const todoId = req.params?.id
+    try {
+        const individualTodo = await prisma.todo.findFirst({
+            where:{
+                id: Number(todoId)
+            }
+        })
+        if(!individualTodo){
+            throw new ApiError(400,"Todo not found")
+        }
+        return res.status(200).json(
+            new ApiResponse(200, "Todo found successfully", individualTodo)
+        )
+    } catch (error) {
+        console.log(error);
+        if(error instanceof Prisma.PrismaClientKnownRequestError){
+            throw new ApiError(error?.code,error?.message,error?.meta)
+        }
+        throw new ApiError(500,"Something went wrong while getting this todo")
+    }
+})
+
+export { createTodo, getTodosbyUserId,getIndividualTodoByTodoId}
