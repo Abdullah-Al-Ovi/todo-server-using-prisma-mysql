@@ -44,7 +44,7 @@ const getTodosbyUserId = asyncHandler(async (req, res) => {
     try {
         const todos = await prisma.user.findFirst({
             where: {
-               id: Number(userId)
+                id: Number(userId)
             },
             include: {
                 todo: {
@@ -60,39 +60,65 @@ const getTodosbyUserId = asyncHandler(async (req, res) => {
             }
         });
         // console.log(todos);
-      return res.status(200).json(
+        return res.status(200).json(
             new ApiResponse(200, "User found successfully", todos)
         )
     } catch (error) {
         // console.log(error);
-        if(error instanceof Prisma.PrismaClientKnownRequestError){
-            throw new ApiError(error?.code,error?.message,error?.meta)
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw new ApiError(error?.code, error?.message, error?.meta)
         }
-        throw new ApiError(500,"Something went wrong while getting todos")
+        throw new ApiError(500, "Something went wrong while getting todos")
     }
 })
 
-const getIndividualTodoByTodoId =asyncHandler(async(req,res)=>{
+const getIndividualTodoByTodoId = asyncHandler(async (req, res) => {
     const todoId = req.params?.id
     try {
         const individualTodo = await prisma.todo.findFirst({
-            where:{
+            where: {
                 id: Number(todoId)
             }
         })
-        if(!individualTodo){
-            throw new ApiError(400,"Todo not found")
+        if (!individualTodo) {
+            throw new ApiError(400, "Todo not found")
         }
         return res.status(200).json(
             new ApiResponse(200, "Todo found successfully", individualTodo)
         )
     } catch (error) {
         console.log(error);
-        if(error instanceof Prisma.PrismaClientKnownRequestError){
-            throw new ApiError(error?.code,error?.message,error?.meta)
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw new ApiError(error?.code, error?.message, error?.meta)
         }
-        throw new ApiError(500,"Something went wrong while getting this todo")
+        throw new ApiError(500, "Something went wrong while getting this todo")
     }
 })
 
-export { createTodo, getTodosbyUserId,getIndividualTodoByTodoId}
+const updateTodo = asyncHandler(async (req, res) => {
+    const todoId = req.params?.id
+    const { title, description, status } = req.body
+    // console.log(req.body);
+    try {
+        const updatedTodo = await prisma.todo.update({
+            where: {
+                id: Number(todoId)
+            },
+            data: {
+                title,
+                description,
+                status
+            }
+        })
+        return res.status(200).json(
+            new ApiResponse(200, "Todo updated successfully", updatedTodo)
+        )
+    } catch (error) {
+        // console.log(error);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+            throw new ApiError(error?.code, error?.message, error?.meta);
+        }
+        throw new ApiError(500, "Something went wrong while updating the todo");
+    }
+})
+export { createTodo, getTodosbyUserId, getIndividualTodoByTodoId, updateTodo}
