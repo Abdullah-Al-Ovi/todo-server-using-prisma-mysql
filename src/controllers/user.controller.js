@@ -15,7 +15,7 @@ const createUser = asyncHandler(async (req, res) => {
     if (!email) {
         throw new ApiError(400, "Email is required")
     }
-    try {
+  
         const existedUser = await prisma.user.findFirst({
             where: {
                 email
@@ -35,12 +35,7 @@ const createUser = asyncHandler(async (req, res) => {
         return res.status(200).json(
             new ApiResponse(200, "User created successfully", newUser)
         )
-    } catch (error) {
-        if(error instanceof Prisma.PrismaClientKnownRequestError){
-            throw new ApiError(error?.code,error?.message,error?.meta)
-        }
-        throw new ApiError(500,"Something went wrong while creating user.")
-    }
+ 
 })
 
 const getUser = asyncHandler(async (req, res) => {

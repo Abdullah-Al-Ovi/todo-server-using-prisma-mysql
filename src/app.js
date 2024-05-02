@@ -1,6 +1,7 @@
 import express, { urlencoded } from 'express'
 import cors from 'cors'
 import { routerPrefix } from './constants.js'
+import errorHandler from './middlewares/errorHandler.middleware.js'
 const app = express()
 
 app.use(cors({
@@ -20,9 +21,10 @@ app.use(express.static('Public'))
 import userRouter from "./routes/user.route.js"
 import todoRouter from "./routes/todo.route.js"
 
+
 // Routes declaration
 app.use(`/${routerPrefix}/users`,userRouter)
 app.use(`/${routerPrefix}/todos`,todoRouter)
-
+app.use(errorHandler)
 
 export {app}

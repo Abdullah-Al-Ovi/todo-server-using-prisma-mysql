@@ -1,5 +1,5 @@
 import prisma from "../DB/db.config.js";
-import { PrismaClient, Prisma } from '@prisma/client'
+import {  Prisma } from '@prisma/client'
 import { asyncHandler } from "../utils/AsyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -41,7 +41,7 @@ const getTodosbyUserId = asyncHandler(async (req, res) => {
     // get user email from params and find user info and send response
     const userId = req.params?.id
     // console.log(userId);
-    try {
+    
         const todos = await prisma.user.findFirst({
             where: {
                 id: Number(userId)
@@ -59,17 +59,14 @@ const getTodosbyUserId = asyncHandler(async (req, res) => {
                 }
             }
         });
+        if(!todos){
+            throw new ApiError(400,"No todos found")
+        }
         // console.log(todos);
         return res.status(200).json(
             new ApiResponse(200, "User found successfully", todos)
         )
-    } catch (error) {
-        // console.log(error);
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            throw new ApiError(error?.code, error?.message, error?.meta)
-        }
-        throw new ApiError(500, "Something went wrong while getting todos")
-    }
+    
 })
 
 const getIndividualTodoByTodoId = asyncHandler(async (req, res) => {
@@ -80,6 +77,7 @@ const getIndividualTodoByTodoId = asyncHandler(async (req, res) => {
                 id: Number(todoId)
             }
         })
+        console.log(individualTodo);
         if (!individualTodo) {
             throw new ApiError(400, "Todo not found")
         }
@@ -121,4 +119,20 @@ const updateTodo = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Something went wrong while updating the todo");
     }
 })
-export { createTodo, getTodosbyUserId, getIndividualTodoByTodoId, updateTodo}
+
+const deleteTodo=asyncHandler(async(req,res)=>{
+    const todoId = req.params?.id 
+    console.log(todoId);
+   
+     const deletedTodo = await prisma.todo.delete({
+         where:{
+             id: Number(todoId)
+         }
+     })
+     return res.status(200).json(
+         new ApiResponse(200,"Todo deleted succesfully",deletedTodo)
+     )
+   
+})
+
+export { createTodo, getTodosbyUserId, getIndividualTodoByTodoId, updateTodo, deleteTodo}
