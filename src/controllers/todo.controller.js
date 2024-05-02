@@ -15,7 +15,6 @@ const createTodo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All fields are required")
     }
 
-    try {
         const newTodo = await prisma.todo.create({
             data: {
                 userId: Number(userId),
@@ -23,18 +22,13 @@ const createTodo = asyncHandler(async (req, res) => {
                 description
             }
         })
+        if(!newTodo){
+            throw new ApiError(500, "Something went wrong while creating this todo")
+        }
         console.log(newTodo);
         return res.status(200).json(
             new ApiResponse(200, "Todo added successfully", newTodo)
         )
-    } catch (error) {
-        // console.error("Prisma error:", error);
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            throw new ApiError(error?.code, error?.message, error?.meta)
-        }
-        throw new ApiError(500, "Something went wrong while creating todo")
-    }
-
 })
 
 const getTodosbyUserId = asyncHandler(async (req, res) => {
@@ -71,7 +65,6 @@ const getTodosbyUserId = asyncHandler(async (req, res) => {
 
 const getIndividualTodoByTodoId = asyncHandler(async (req, res) => {
     const todoId = req.params?.id
-    try {
         const individualTodo = await prisma.todo.findFirst({
             where: {
                 id: Number(todoId)
@@ -84,20 +77,16 @@ const getIndividualTodoByTodoId = asyncHandler(async (req, res) => {
         return res.status(200).json(
             new ApiResponse(200, "Todo found successfully", individualTodo)
         )
-    } catch (error) {
-        console.log(error);
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            throw new ApiError(error?.code, error?.message, error?.meta)
-        }
-        throw new ApiError(500, "Something went wrong while getting this todo")
-    }
 })
 
 const updateTodo = asyncHandler(async (req, res) => {
     const todoId = req.params?.id
     const { title, description, status } = req.body
     // console.log(req.body);
-    try {
+    if ([title, description].some((field) => field?.trim() === "")) {
+        throw new ApiError(400, "Updated fields are required")
+    }
+
         const updatedTodo = await prisma.todo.update({
             where: {
                 id: Number(todoId)
@@ -108,16 +97,13 @@ const updateTodo = asyncHandler(async (req, res) => {
                 status
             }
         })
+        if(!updatedTodo){
+            throw new ApiError(500, "Something went wrong while updating this todo")
+        }
         return res.status(200).json(
             new ApiResponse(200, "Todo updated successfully", updatedTodo)
         )
-    } catch (error) {
-        // console.log(error);
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            throw new ApiError(error?.code, error?.message, error?.meta);
-        }
-        throw new ApiError(500, "Something went wrong while updating the todo");
-    }
+    
 })
 
 const deleteTodo=asyncHandler(async(req,res)=>{
@@ -129,6 +115,9 @@ const deleteTodo=asyncHandler(async(req,res)=>{
              id: Number(todoId)
          }
      })
+     if(!deleteTodo){
+        throw new ApiError(500, "Something went wrong while deleting this todo")
+     }
      return res.status(200).json(
          new ApiResponse(200,"Todo deleted succesfully",deletedTodo)
      )

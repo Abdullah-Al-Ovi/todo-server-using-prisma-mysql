@@ -2,8 +2,8 @@ import { ApiError } from "../utils/ApiError.js";
 import { Prisma } from "@prisma/client";
 
 const errorHandler = (err, req, res, next) => {
-    console.log("AT middleware code: ",err.code);
-    console.log("AT middleware msg: ",err.meta.cause);
+    // console.log("AT middleware code: ",err.code);
+    // console.log("AT middleware msg: ",err.meta.cause);
     if (err instanceof ApiError) {
         res.status(err.statusCode).json({
             status:err.statusCode,
@@ -25,6 +25,7 @@ const errorHandler = (err, req, res, next) => {
     else {
         // console.error('Unhandled error:', err);
         res.status(500).json({
+            status:500,
             success: false,
             message: 'Internal Server Error',
             errors: [],

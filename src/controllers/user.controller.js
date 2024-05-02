@@ -30,7 +30,11 @@ const createUser = asyncHandler(async (req, res) => {
                 email
             }
         })
-        console.log(newUser);
+        // console.log(newUser);
+        if(!newUser){
+            throw new ApiError(500, "Something went wrong while creating user.")
+        }
+
 
         return res.status(200).json(
             new ApiResponse(200, "User created successfully", newUser)
@@ -41,21 +45,17 @@ const createUser = asyncHandler(async (req, res) => {
 const getUser = asyncHandler(async (req, res) => {
     // get user email from params and find user info and send response
     const userEmail = req.params?.email
-    try {
         const user = await prisma.user.findFirst({
             where: {
                email: userEmail
             }
         })
+        if(!user){
+            throw new ApiError(500, "User not found")
+        }
       return res.status(200).json(
             new ApiResponse(200, "User found successfully", user)
         )
-    } catch (error) {
-        if(error instanceof Prisma.PrismaClientKnownRequestError){
-            throw new ApiError(error?.code,error?.message,error?.meta)
-        }
-        throw new ApiError(500,"Something went wrong while communicating with database")
-    }
 })
 
 
