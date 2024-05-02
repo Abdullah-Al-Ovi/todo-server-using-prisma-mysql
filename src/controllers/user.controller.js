@@ -1,5 +1,5 @@
 import prisma from "../DB/db.config.js";
-import { PrismaClient, Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/AsyncHandler.js";
@@ -52,7 +52,7 @@ const getUser = asyncHandler(async (req, res) => {
                email: userEmail
             }
         })
-        res.status(200).json(
+      return res.status(200).json(
             new ApiResponse(200, "User found successfully", user)
         )
     } catch (error) {
