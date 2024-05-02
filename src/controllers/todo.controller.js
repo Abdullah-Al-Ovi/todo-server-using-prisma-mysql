@@ -37,4 +37,39 @@ const createTodo = asyncHandler(async (req, res) => {
 
 })
 
-export { createTodo }
+const getTodosbyUserId = asyncHandler(async (req, res) => {
+    // get user email from params and find user info and send response
+    const userId = req.params?.id
+    // console.log(userId);
+    try {
+        const todos = await prisma.user.findFirst({
+            where: {
+               id: Number(userId)
+            },
+            include: {
+                todo: {
+                    select: {
+                        id: true,
+                        title: true,
+                        description: true,
+                        status: true,
+                        createdAt: true,
+                        updatedAt: true
+                    }
+                }
+            }
+        });
+        // console.log(todos);
+      return res.status(200).json(
+            new ApiResponse(200, "User found successfully", todos)
+        )
+    } catch (error) {
+        // console.log(error);
+        if(error instanceof Prisma.PrismaClientKnownRequestError){
+            throw new ApiError(error?.code,error?.message,error?.meta)
+        }
+        throw new ApiError(500,"Something went wrong while getting todos")
+    }
+})
+
+export { createTodo, getTodosbyUserId}

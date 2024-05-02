@@ -6,4 +6,5 @@ const router = Router()
 router.route("/createUser").post(createUser)
 router.route("/:email").get(getUser)
 
+
 export default router;
